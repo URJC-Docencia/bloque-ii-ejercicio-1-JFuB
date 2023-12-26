@@ -1,6 +1,8 @@
 import material.Position;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -210,45 +212,78 @@ public class LCRSTree<E> implements NAryTree<E> {
 
     @Override
     public boolean isEmpty() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return root==null;
     }
 
     @Override
     public Position<E> root() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return root;
     }
 
     @Override
     public Position<E> parent(Position<E> v) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        var node = checkPosition(v);
+        return node.getParent();
     }
 
     @Override
     public Iterable<? extends Position<E>> children(Position<E> v) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        var node = checkPosition(v);
+        var list = new ArrayList<Position<E>>();
+        var child = node.getLeftChild();
+        while (child!=null){
+            list.add(child);
+            child = child.getRightSibling();
+        }
+        return list;
     }
 
     @Override
     public boolean isInternal(Position<E> v) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        var node = checkPosition(v);
+        return node.getLeftChild()!=null;
     }
 
     @Override
     public boolean isLeaf(Position<E> v) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        var node = checkPosition(v);
+        return node.getLeftChild()==null;
     }
 
     @Override
     public boolean isRoot(Position<E> v) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        var node = checkPosition(v);
+        return root == node;
     }
 
     @Override
     public Iterator<Position<E>> iterator() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(isEmpty()){
+            return new ArrayList<Position<E>>().iterator();
+        }
+        List<Position<E>> positions = new ArrayList<>();
+        breadthFirstTraversal(root,positions);
+        return positions.iterator();
     }
 
-    public int size() {
+    private void breadthFirstTraversal(LCRSnode<E> node, List<Position<E>> positions) {
+        if(node!=null){
+            List<LCRSnode> queue = new ArrayList<>();
+            queue.add(node);
+            while(!queue.isEmpty()){
+                LCRSnode<E> nodeToVisit = queue.remove(0);
+                positions.add(nodeToVisit);
+                LCRSnode<E> leftChild = nodeToVisit.getLeftChild();
+                while(leftChild!=null){
+                    queue.add(leftChild);
+                    leftChild.setRightSibling();
+                }
+            }
+        }
+    }
+
+
+        public int size() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
